@@ -2,53 +2,59 @@ var express = require('express');
 var router = express.Router();
 var ObjectID = require('mongodb').ObjectID;
 
-/* GET users listing. */
+/******************************** 
+* 
+*********************************/
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource-1234');
+    res.send('respond with a resource-1234');
 });
-
+/******************************** 
+* 
+*********************************/
 router.get('/index', function(req, res) {
-  var db = req.db;
-  var collection = db.get('todos');
-  var items = [];
-  collection.find({},{},function(e,docs){
-      docs.forEach( function (item) {
-          //toTimeString
-          items.push(item);
-      });
-      var param = {"docs": items };
-      res.json(param);
-  });
+    var db = req.db;
+    var collection = db.get('todos');
+    var items = [];
+    //    collection.find({},{},function(e,docs){
+    collection.find({},{sort: {up_date: -1}},function(e,docs){
+        docs.forEach( function (item) {
+            items.push(item);
+        });
+        var param = {"docs": items };
+        res.json(param);
+    });
 });
-
+/******************************** 
+* 
+*********************************/
 router.post('/new', (req, res) => {
-  console.log(req.body.title )
-  var db = req.db;
-  var obj = req.body;
-  obj.up_date = new Date();
-  var collection = db.get('todos');
-  collection.insert(obj , function(err, result ) {
-      if (err) throw err;
-      res.json(req.body);
-      db.close();
-  });        
+    console.log(req.body.title )
+    var db = req.db;
+    var obj = req.body;
+    obj.up_date = new Date();
+    var collection = db.get('todos');
+    collection.insert(obj , function(err, result ) {
+        if (err) throw err;
+        res.json(req.body);
+        db.close();
+    });        
 });
-
+/******************************** 
+* 
+*********************************/
 router.get('/show/:id', function(req, res) {
-  var db = req.db;
-  console.log(req.params.id  );
-  var collection = db.get('todos');
-//    res.send("1");
-  collection.find({"_id": new ObjectID(req.params.id)},{},function(e,docs){
-      var param = {"docs": docs };
-      res.json(param);
-  });
-  /*
-  */
+    var db = req.db;
+    console.log(req.params.id  );
+    var collection = db.get('todos');
+    //    res.send("1");
+    collection.find({"_id": new ObjectID(req.params.id)},{},function(e,docs){
+        var param = {"docs": docs };
+        res.json(param);
+    });
 });
-
-
-//update
+/******************************** 
+* update
+*********************************/
 router.post('/update', (req, res) => {
   var db = req.db;
   console.log(req.body )
@@ -65,8 +71,9 @@ router.post('/update', (req, res) => {
       db.close();
   });        
 });
-
-//delete
+/******************************** 
+* delete
+*********************************/
 router.get('/delete/:id', function(req, res) {
   var db = req.db;
   console.log(req.params.id  );
